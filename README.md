@@ -205,7 +205,7 @@ Display Results using Jinja2
 
 ### 📤 Upload Resume
 
-![Upload Resume](images/upload.png)
+![Upload Resume](images/Upload.png)
 
 ### 📄 Parsed Output
 
