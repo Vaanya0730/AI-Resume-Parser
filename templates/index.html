@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Intelligence</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #134e5e);
+            background-size: 400% 400%;
+            animation: bg 15s ease infinite;
+        }
+
+        @keyframes bg {
+            0% {
+                background-position: 0 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0 50%;
+            }
+        }
+
+        .glow {
+            position: fixed;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .25;
+        }
+
+        .g1 {
+            background: #22d3ee;
+            top: -80px;
+            left: -80px;
+        }
+
+        .g2 {
+            background: #3b82f6;
+            right: -80px;
+            bottom: -80px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, .08);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, .15);
+        }
+    </style>
+</head>
+
+<body class="text-white">
+
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+
+            <div>
+                <img class="h-12 mb-8"
+                    src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1706986565/hqatxpsjdg3zeql20jfe.png"
+                    alt="Logo">
+
+                <h1 class="text-6xl font-extrabold">AI Resume Intelligence</h1>
+
+                <p class="text-cyan-300 text-2xl mt-5">
+                    Extract Candidate Information in Seconds
+                </p>
+
+                <p class="text-gray-200 mt-6 leading-8 max-w-xl">
+                    Upload a PDF resume and automatically identify education, skills,
+                    projects, experience and contact information using AI-powered
+                    resume analysis.
+                </p>
+
+                <form action="/process" method="post" enctype="multipart/form-data" class="mt-10 space-y-5">
+
+                    <input
+                        type="file"
+                        name="pdf_doc"
+                        id="pdf_doc"
+                        accept=".pdf"
+                        class="block w-full rounded-xl border border-cyan-400 bg-white/10 p-3 file:bg-cyan-500 file:text-white file:border-0 file:px-4 file:py-2 file:rounded-lg">
+
+                    <button type="submit"
+                        class="bg-cyan-500 hover:bg-cyan-400 px-8 py-3 rounded-xl font-semibold">
+                        Process Resume
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="flex justify-center">
+                <img
+                    src="https://res.cloudinary.com/dtsuvx8dz/image/upload/v1716357077/o1imiun4wwcpia9uucgs.gif"
+                    class="w-72 rounded-2xl shadow-2xl"
+                    alt="AI Animation">
+            </div>
+
+        </div>
+
+        <div class="card rounded-3xl mt-16 p-8">
+            <h2 class="text-3xl font-bold mb-6">Parsed Resume Details</h2>
+            <div id="dictionaryValues" class="space-y-2"></div>
+        </div>
+
+    </div>
+
+    {% if data %}
+    <script>
+
+        function generateHTML(obj) {
+
+            let html = "";
+
+            for (const key in obj) {
+
+                html += `
+        <div class="mb-4 p-3 rounded-lg bg-white/5">
+            <h3 class="text-cyan-300 font-bold text-lg">${key}</h3>
+        `;
+
+                if (Array.isArray(obj[key])) {
+
+                    html += "<ul class='list-disc ml-6'>";
+
+                    obj[key].forEach(item => {
+
+                        if (typeof item === "object") {
+
+                            html += "<li>" + generateHTML(item) + "</li>";
+
+                        } else {
+
+                            html += "<li>" + item + "</li>";
+
+                        }
+
+                    });
+
+                    html += "</ul>";
+
+                }
+                else if (typeof obj[key] === "object" && obj[key] !== null) {
+
+                    html += generateHTML(obj[key]);
+
+                }
+                else {
+
+                    html += `<p>${obj[key]}</p>`;
+
+                }
+
+                html += "</div>";
+
+            }
+
+            return html;
+        }
+
+        const data = {{ data | tojson | safe }};
+
+        document.getElementById("dictionaryValues").innerHTML = generateHTML(data);
+
+    </script>
+    {% endif %}
+
+</body>
+
+</html>
